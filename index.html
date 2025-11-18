@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Centering & Validation Assessment</title>
+<style>
+  :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#ff6b6b;--glass:rgba(255,255,255,0.03)}
+  body{font-family:Inter,Segoe UI,system-ui,Arial;margin:0;background:linear-gradient(180deg,#071028 0%, #081428 60%);color:#e6eef6;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .wrap{width:100%;max-width:980px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:12px;padding:20px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+  h1{margin:0 0 8px;font-size:20px}
+  p.lead{margin:0 0 16px;color:var(--muted);font-size:13px}
+  label{display:block;margin:8px 0 4px;font-size:13px;color:var(--muted)}
+  input[type=text], select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit}
+  button{background:var(--accent);border:none;color:#081428;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+  .muted{color:var(--muted);font-size:13px}
+  .question-card{margin-top:18px}
+  .question{background:rgba(255,255,255,0.02);padding:18px;border-radius:10px;margin-bottom:10px}
+  .qtext{font-weight:700;margin-bottom:12px}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .optbtn{display:flex;gap:10px;align-items:center;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+  .optbtn input{margin:0}
+  .progress{font-size:13px;color:var(--muted);margin-top:8px}
+  .center-result{margin-top:18px;padding:14px;border-radius:10px;background:rgba(255,255,255,0.01);border:1px solid rgba(255,255,255,0.03)}
+  .small{font-size:12px;color:var(--muted)}
+  .scores{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .score-pill{background:rgba(255,255,255,0.02);padding:6px 10px;border-radius:999px;font-size:12px}
+  .footer{margin-top:18px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .warning{background:#2b2f34;padding:12px;border-radius:8px;color:#ffdede;margin-bottom:12px;font-size:13px}
+  .locked{opacity:0.7}
+  .nav-row{display:flex;gap:8px;justify-content:space-between;margin-top:12px;align-items:center}
+  .nav-row .muted{margin:0}
+  @media (max-width:640px){.opts{gap:6px}.wrap{padding:12px}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <h1>Centering & Validation Assessment</h1>
+  <p class="lead">Answer honestly. The quiz determines whether you tend toward being female-centered, male-centered, self-centered, ideology-centered, validation-dependent, or genuinely independent. Name and gender are saved in this browser and cannot be changed from this device unless you clear site data.</p>
+
+  <div id="identitySection">
+    <label for="name">Your name</label>
+    <input id="name" type="text" maxlength="60" placeholder="Type your name" />
+    <label for="gender">Your gender</label>
+    <select id="gender">
+      <option value="" disabled selected>Choose gender</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+    </select>
+    <p class="small muted">Once saved these fields are locked in this browser to ensure consistent results.</p>
+    <div style="margin-top:10px">
+      <button id="saveIdentity">Save and Start Quiz</button>
+    </div>
+  </div>
+
+  <div id="lockedNotice" style="display:none" class="warning locked">
+    <strong>Identity locked:</strong> your name and gender have been saved. To change them you must clear site data in your browser. Answer truthfully for accurate results.
+  </div>
+
+  <div id="intro" style="display:none">
+    <div class="warning">
+      <strong>How to answer</strong>
+      <ul style="margin:6px 0 0 20px;padding:0;color:#ffe9e9">
+        <li>Answer as you actually behave, not how you want to be seen.</li>
+        <li>There are 50 questions. You can later select 25 if you want a shorter test.</li>
+        <li>Each center is described so you know what the result means.</li>
+      </ul>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+      <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px">
+        <strong>Female-centered</strong>
+        <p class="small muted" style="margin:6px 0">Prioritizes female approval and group loyalty; signals solidarity publicly; may adopt narratives that favor women first.</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px">
+        <strong>Male-centered</strong>
+        <p class="small muted" style="margin:6px 0">Prioritizes male peer approval, status, and reputation. Behavior is often calibrated to impress male peers rather than independent judgment.</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px">
+        <strong>Self-centered</strong>
+        <p class="small muted" style="margin:6px 0">Decisions primarily reflect personal goals and benefit; less influenced by peers. Can be pragmatic or selfish depending on choices.</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px">
+        <strong>Group-centered</strong>
+        <p class="small muted" style="margin:6px 0">Follows a group's beliefs closely; opinions and actions often align with that group rather than independent evidence.</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px">
+        <strong>Validation-dependent</strong>
+        <p class="small muted" style="margin:6px 0">Makes choices to gain approval and reduce social anxiety. Sensitive to likes and comments; less internally anchored.</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.02);padding:10px;border-radius:8px">
+        <strong>Genuinely independent</strong>
+        <p class="small muted" style="margin:6px 0">Answers and acts based on personal reasoning and evidence. Least influenced by peers or social metrics; choices reflect internal standards.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <button id="startQuiz">Begin Questions</button>
+    </div>
+  </div>
+
+  <form id="quizForm" style="display:none" onsubmit="return false;">
+    <div class="question-card">
+      <div id="questionWrapper" class="question" style="display:none">
+        <div class="qtext" id="qText"></div>
+        <div class="opts" id="opts"></div>
+        <div class="progress" id="progress"></div>
+      </div>
+
+      <div class="nav-row">
+        <div class="muted" id="navHint">Answer the current question to proceed.</div>
+        <div>
+          <button type="button" id="prevBtn" style="background:#445;margin-right:8px">Back</button>
+          <button type="button" id="nextBtn">Next</button>
+        </div>
+      </div>
+
+      <div id="submitRow" style="display:none;margin-top:12px">
+        <div class="small muted">All questions answered. Submit to get your result.</div>
+        <div style="margin-top:8px">
+          <button id="submitBtn" type="button">Submit Answers</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="result" style="display:none" class="center-result">
+      <h3>Assessment Result</h3>
+      <div id="resultText" style="font-weight:700;white-space:pre-wrap"></div>
+      <div id="breakdown" class="small muted" style="margin-top:8px"></div>
+      <div style="margin-top:10px">
+        <button id="restart">Restart (same identity)</button>
+        <button id="clearIdentity" style="margin-left:8px;background:#445">Clear saved identity</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+/* Replace with your Formspree endpoint */
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mbllowqw";
+
+/* Questions array (50). Each option has text and a value mapping to categories:
+   'female', 'male', 'self', 'group' (was ideology), 'validation', 'independent'
+*/
+const QUESTIONS = [
+  { q: "A viral post claims a man assaulted a woman. You:", opts:[
+      {t:"Repost to show support for women.", v:"female"},
+      {t:"Wait for evidence before reacting.", v:"independent"},
+      {t:"Ignore unless it affects you.", v:"self"},
+      {t:"Comment to show you follow popular opinion.", v:"validation"},
+    ]
+  },
+  { q: "A female friend complains about being undermined at work. You:", opts:[
+      {t:"Publicly back her.", v:"female"},
+      {t:"Ask for details before deciding.", v:"independent"},
+      {t:"Tell her to focus on what helps you.", v:"self"},
+      {t:"Stay neutral to avoid conflict.", v:"validation"},
+    ]
+  },
+  { q: "You see a trending hashtag supporting men or women rights. You:", opts:[
+      {t:"Share it to show you care.", v:"validation"},
+      {t:"Read carefully before engaging.", v:"independent"},
+      {t:"Ignore; it doesn’t affect you.", v:"self"},
+      {t:"Share to fit in with popular opinion.", v:"group"},
+    ]
+  },
+  { q: "Who’s compliment matters most to you?", opts:[
+      {t:"Female friends", v:"female"},
+      {t:"Male friends", v:"male"},
+      {t:"Yourself", v:"self"},
+      {t:"Anyone in your social group", v:"validation"},
+    ]
+  },
+  { q: "You’re tempted to post something controversial online. You:", opts:[
+      {t:"Avoid posting to not upset women.", v:"female"},
+      {t:"Avoid posting to not upset men.", v:"male"},
+      {t:"Post regardless of others", v:"independent"},
+      {t:"Post if your friends approve", v:"validation"},
+    ]
+  },
+  { q: "A male friend criticizes you publicly. You:", opts:[
+      {t:"Try to repair your reputation with men", v:"male"},
+      {t:"Ask for context", v:"independent"},
+      {t:"Ignore and protect yourself", v:"self"},
+      {t:"Follow what others around you say", v:"validation"},
+    ]
+  },
+  { q: "Your main social circle is:", opts:[
+      {t:"Mostly men whose approval you want", v:"male"},
+      {t:"Mostly women whose approval you want", v:"female"},
+      {t:"Mixed, but you do what you want", v:"independent"},
+      {t:"Friends who all think like you", v:"group"},
+    ]
+  },
+  { q: "You learn a skill mainly to impress:", opts:[
+      {t:"Men", v:"male"},
+      {t:"Women", v:"female"},
+      {t:"Yourself", v:"self"},
+      {t:"Friends who share your values", v:"validation"},
+    ]
+  },
+  { q: "A fight happens among male friends. You:", opts:[
+      {t:"Support the man who keeps the group strong", v:"male"},
+      {t:"Stay neutral", v:"independent"},
+      {t:"Avoid it unless it affects you", v:"self"},
+      {t:"Follow what friends tell you", v:"validation"},
+    ]
+  },
+  { q: "In negotiations, you focus on:", opts:[
+      {t:"How men see you", v:"male"},
+      {t:"How women see you", v:"female"},
+      {t:"The best result for yourself", v:"self"},
+      {t:"What your group thinks is right", v:"group"},
+    ]
+  },
+  { q: "You hide weakness because:", opts:[
+      {t:"Men will judge you", v:"male"},
+      {t:"Women will judge you", v:"female"},
+      {t:"You want to be honest", v:"independent"},
+      {t:"Your friends will judge you", v:"validation"},
+    ]
+  },
+  { q: "Which phrase fits you best?", opts:[
+      {t:"Never show weakness around men", v:"male"},
+      {t:"Never show weakness around women", v:"female"},
+      {t:"I show weakness when it’s real", v:"independent"},
+      {t:"I act based on what my friends expect", v:"validation"},
+    ]
+  },
+  { q: "You tell stories to:", opts:[
+      {t:"Impress men", v:"male"},
+      {t:"Impress women", v:"female"},
+      {t:"Record your truth", v:"self"},
+      {t:"Fit in with your group", v:"validation"},
+    ]
+  },
+  { q: "You prefer mentors who are:", opts:[
+      {t:"Older men who can help you", v:"male"},
+      {t:"Women who understand you", v:"female"},
+      {t:"Anyone who gives good advice", v:"independent"},
+      {t:"Friends who share your beliefs", v:"group"},
+    ]
+  },
+  { q: "You feel brave when:", opts:[
+      {t:"Doing risky things that impress men", v:"male"},
+      {t:"Standing up for women", v:"female"},
+      {t:"Doing what you think is right", v:"independent"},
+      {t:"Acting how friends expect you", v:"validation"},
+    ]
+  },
+  { q: "Your partner asks you to compromise career for them. You:", opts:[
+      {t:"Refuse; your goals come first", v:"self"},
+      {t:"Sacrifice willingly", v:"validation"},
+      {t:"Negotiate for balance", v:"independent"},
+      {t:"Ask what friends would do", v:"group"},
+    ]
+  },
+  { q: "A stranger needs help costing you time or money. You:", opts:[
+      {t:"Help if it benefits you", v:"self"},
+      {t:"Help immediately", v:"validation"},
+      {t:"Help but resent it", v:"female"},
+      {t:"Help if others expect it", v:"group"},
+    ]
+  },
+  { q: "You donate to charity:", opts:[
+      {t:"When it improves your image", v:"validation"},
+      {t:"Generously even if costly", v:"self"},
+      {t:"Prudently where it matters", v:"independent"},
+      {t:"Because friends expect it", v:"group"},
+    ]
+  },
+  { q: "You apologize when wrong:", opts:[
+      {t:"For reputation", v:"validation"},
+      {t:"Genuinely to repair", v:"independent"},
+      {t:"Pragmatically", v:"self"},
+      {t:"Because friends pressure you", v:"group"},
+    ]
+  },
+  { q: "You resist peer pressure by:", opts:[
+      {t:"Prioritizing self-interest", v:"self"},
+      {t:"Giving in out of fear", v:"validation"},
+      {t:"Quietly disagreeing while complying", v:"independent"},
+      {t:"Doing what friends expect", v:"group"},
+    ]
+  },
+  { q: "You feel angry when others expect constant help. You:", opts:[
+      {t:"Stop helping and protect yourself", v:"self"},
+      {t:"Accept quietly because guilt compels you", v:"validation"},
+      {t:"Set boundaries calmly", v:"independent"},
+      {t:"Appeal to group norms to justify choices", v:"group"},
+    ]
+  },
+  { q: "Someone from your group is accused of wrongdoing. You:", opts:[
+      {t:"Defend them to protect the group", v:"group"},
+      {t:"Wait for evidence", v:"independent"},
+      {t:"Avoid it", v:"self"},
+      {t:"Follow majority opinion quickly", v:"validation"},
+    ]
+  },
+  { q: "New evidence goes against your belief. You:", opts:[
+      {t:"Try to explain it away", v:"group"},
+      {t:"Change your belief if evidence is strong", v:"independent"},
+      {t:"Ignore it", v:"validation"},
+      {t:"Ask friends what to think", v:"validation"},
+    ]
+  },
+  { q: "You join causes because:", opts:[
+      {t:"Your friends support it", v:"validation"},
+      {t:"You believe it is right", v:"independent"},
+      {t:"It helps you personally", v:"self"},
+      {t:"It is expected from your group", v:"group"},
+    ]
+  },
+  { q: "In a debate, you want to:", opts:[
+      {t:"Win for your group", v:"group"},
+      {t:"Find the truth", v:"independent"},
+      {t:"Protect your reputation", v:"validation"},
+      {t:"Avoid conflict", v:"self"},
+    ]
+  },
+  { q: "Asked to take a public stand:", opts:[
+      {t:"Comply to fit in", v:"validation"},
+      {t:"Ask for reasons first", v:"independent"},
+      {t:"Refuse if it goes against values", v:"self"},
+      {t:"Follow friends advice", v:"group"},
+    ]
+  },
+  { q: "You judge ideas by:", opts:[
+      {t:"Group agreement", v:"group"},
+      {t:"Logic and evidence", v:"independent"},
+      {t:"How it benefits you", v:"self"},
+      {t:"What peers expect", v:"validation"},
+    ]
+  },
+  { q: "You criticize others:", opts:[
+      {t:"To protect the group", v:"group"},
+      {t:"After thinking carefully", v:"independent"},
+      {t:"To protect yourself", v:"self"},
+      {t:"Because friends want it", v:"validation"},
+    ]
+  },
+  { q: "Partner says you are emotionally distant. You:", opts:[
+      {t:"Ignore because men do not show feelings", v:"male"},
+      {t:"Reframe to impress women", v:"female"},
+      {t:"Reflect and adjust if valid", v:"independent"},
+      {t:"Ask friends what to do", v:"validation"},
+    ]
+  },
+  { q: "Partner wants you to stop posting certain things. You:", opts:[
+      {t:"Stop to protect male respect", v:"male"},
+      {t:"Stop to avoid female backlash", v:"female"},
+      {t:"Decide independently", v:"independent"},
+      {t:"Ask friends for advice", v:"validation"},
+    ]
+  },
+  { q: "Partner is in pain and needs you. You:", opts:[
+      {t:"Support but only if it does not derail your goals", v:"self"},
+      {t:"Drop everything immediately to help", v:"validation"},
+      {t:"Help while protecting boundaries", v:"independent"},
+      {t:"Get friends input first", v:"group"},
+    ]
+  },
+  { q: "Partner influenced by online opinions. You:", opts:[
+      {t:"Compete with influencers", v:"male"},
+      {t:"Agree with female peers", v:"female"},
+      {t:"Discuss calmly", v:"independent"},
+      {t:"Do what friends suggest", v:"validation"},
+    ]
+  },
+  { q: "Partner flirts online. You:", opts:[
+      {t:"Confront to protect status", v:"male"},
+      {t:"Ask female friends for advice", v:"female"},
+      {t:"Communicate directly", v:"independent"},
+      {t:"Use it to prove a point", v:"validation"},
+    ]
+  },
+  { q: "Choose between a job and partner wellbeing. You:", opts:[
+      {t:"Take job for self", v:"self"},
+      {t:"Sacrifice for partner", v:"validation"},
+      {t:"Negotiate compromise", v:"independent"},
+      {t:"Ask friends opinion", v:"group"},
+    ]
+  },
+  { q: "Someone posts a flattering photo of you; whose praise matters most?", opts:[
+      {t:"Female friends comments", v:"female"},
+      {t:"Male friends comments", v:"male"},
+      {t:"Your own approval", v:"self"},
+      {t:"Comments from your online group", v:"validation"},
+    ]
+  },
+  { q: "A group chat of women expresses anger at men; you:", opts:[
+      {t:"Match their tone and escalate support", v:"female"},
+      {t:"Try to calm things by asking for nuance", v:"independent"},
+      {t:"Stay silent to avoid conflict", v:"validation"},
+      {t:"Echo group rhetoric to keep status", v:"group"},
+    ]
+  },
+  { q: "Your profile picture is changed by a campaign request. You:", opts:[
+      {t:"Change it to show solidarity", v:"female"},
+      {t:"Only change if you understand the campaign", v:"independent"},
+      {t:"Refuse; your image is personal", v:"self"},
+      {t:"Change to signal loyalty to your group", v:"group"},
+    ]
+  },
+  { q: "You receive a compliment from a woman and from a man at the same time. Which matters more?", opts:[
+      {t:"The woman’s compliment", v:"female"},
+      {t:"The man’s compliment", v:"male"},
+      {t:"Neither; you judge by your standards", v:"independent"},
+      {t:"The one from your social group", v:"validation"},
+    ]
+  },
+  { q: "You feel happiest when:", opts:[
+      {t:"Other women validate your choices", v:"female"},
+      {t:"Male friends respect you", v:"male"},
+      {t:"You accomplish something independently", v:"self"},
+      {t:"Your group recognizes you", v:"validation"},
+    ]
+  },
+  { q: "You change political or moral posts based on friends approval:", opts:[
+      {t:"Often", v:"validation"},
+      {t:"Sometimes", v:"validation"},
+      {t:"Rarely", v:"independent"},
+      {t:"Never", v:"self"},
+    ]
+  },
+  { q: "If your reposting or activism costs your relationship, you:", opts:[
+      {t:"Accept the cost because the cause is more important", v:"female"},
+      {t:"Re-evaluate priorities and act differently", v:"independent"},
+      {t:"Compromise somewhere in the middle", v:"validation"},
+      {t:"Ask friends which side you should choose", v:"group"},
+    ]
+  },
+  { q: "A male friend needs support after abuse. You:", opts:[
+      {t:"Do not give the same energy; focus on women stories", v:"female"},
+      {t:"Offer the same help you would give anyone", v:"independent"},
+      {t:"Hesitate because it complicates your image", v:"validation"},
+      {t:"Ask friends for guidance", v:"group"},
+    ]
+  },
+  { q: "You measure your moral standing by:", opts:[
+      {t:"The causes you publicly support", v:"validation"},
+      {t:"The private actions you take", v:"independent"},
+      {t:"How others praise you for your stands", v:"validation"},
+      {t:"What your close circle thinks", v:"group"},
+    ]
+  },
+  { q: "Your partner asks you to stop sharing inflammatory posts. You:", opts:[
+      {t:"Keep sharing and accuse them of being unsupportive", v:"validation"},
+      {t:"Discuss why each post matters and set a middle ground", v:"independent"},
+      {t:"Stop to keep peace even if you disagree", v:"validation"},
+      {t:"Ask friends what to do", v:"group"},
+    ]
+  },
+  { q: "New evidence goes against your belief. You:", opts:[
+      {t:"Try to explain it away", v:"group"},
+      {t:"Change belief if evidence is strong", v:"independent"},
+      {t:"Ignore it", v:"validation"},
+      {t:"Ask friends what to think", v:"validation"},
+    ]
+  },
+  { q: "You repost a survivor’s story; do you contact them privately?", opts:[
+      {t:"No; public repost is my action", v:"validation"},
+      {t:"Yes; check they are okay and offer help", v:"independent"},
+      {t:"Only if I know them", v:"self"},
+      {t:"Ask friends to handle it", v:"group"},
+    ]
+  },
+  { q: "You post a dramatic women story and then move on. Why?", opts:[
+      {t:"The feeling of doing something is enough", v:"validation"},
+      {t:"I follow up with concrete steps privately", v:"independent"},
+      {t:"I forget; life goes on", v:"self"},
+      {t:"I posted because friends expected it", v:"group"},
+    ]
+  },
+  { q: "When confronted with complexity, you:", opts:[
+      {t:"Default to supporting women", v:"female"},
+      {t:"Seek balanced information", v:"independent"},
+      {t:"Avoid nuance because it is messy", v:"validation"},
+      {t:"Ask your friends how they feel", v:"group"},
+    ]
+  }
+];
+
+// Utility shuffle
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
+
+// DOM
+const nameInput = document.getElementById('name');
+const genderInput = document.getElementById('gender');
+const saveIdentityBtn = document.getElementById('saveIdentity');
+const intro = document.getElementById('intro');
+const startQuizBtn = document.getElementById('startQuiz');
+const quizForm = document.getElementById('quizForm');
+const qText = document.getElementById('qText');
+const optsDiv = document.getElementById('opts');
+const progressDiv = document.getElementById('progress');
+const questionWrapper = document.getElementById('questionWrapper');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const submitRow = document.getElementById('submitRow');
+const submitBtn = document.getElementById('submitBtn');
+const resultBox = document.getElementById('result');
+const resultText = document.getElementById('resultText');
+const breakdown = document.getElementById('breakdown');
+const lockedNotice = document.getElementById('lockedNotice');
+const identitySection = document.getElementById('identitySection');
+const restartBtn = document.getElementById('restart');
+const clearIdentityBtn = document.getElementById('clearIdentity');
+const navHint = document.getElementById('navHint');
+
+let shuffledQuestions = [];
+let currentIndex = 0;
+let answers = {}; // keyed by shuffled index
+let identity = {name:null,gender:null};
+
+function loadIdentity(){
+  const raw = localStorage.getItem('qc_identity_v2');
+  if(raw){
+    try{
+      const obj = JSON.parse(raw);
+      if(obj && obj.name && obj.gender){
+        identity = obj;
+        nameInput.value = obj.name;
+        genderInput.value = obj.gender;
+        identitySection.style.display = 'none';
+        lockedNotice.style.display = 'block';
+        intro.style.display = 'block';
+      }
+    }catch(e){}
+  }
+}
+loadIdentity();
+
+saveIdentityBtn.addEventListener('click', ()=>{
+  const nm = nameInput.value && nameInput.value.trim();
+  const g = genderInput.value;
+  if(!nm || !g){ alert('Enter name and select gender.'); return; }
+  identity = {name:nm,gender:g};
+  localStorage.setItem('qc_identity_v2', JSON.stringify(identity));
+  identitySection.style.display = 'none';
+  lockedNotice.style.display = 'block';
+  intro.style.display = 'block';
+});
+
+clearIdentityBtn.addEventListener('click', ()=>{
+  if(confirm('Clear saved name and gender? This will reset identity on this browser.')) {
+    localStorage.removeItem('qc_identity_v2');
+    location.reload();
+  }
+});
+
+startQuizBtn.addEventListener('click', ()=>{
+  intro.style.display = 'none';
+  quizForm.style.display = 'block';
+  initQuiz();
+});
+
+function initQuiz(){
+  // deep copy and shuffle questions and options
+  shuffledQuestions = shuffle(JSON.parse(JSON.stringify(QUESTIONS)));
+  shuffledQuestions.forEach(q => q.opts = shuffle(q.opts));
+  currentIndex = 0;
+  answers = {};
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const total = shuffledQuestions.length;
+  const qObj = shuffledQuestions[currentIndex];
+  qText.innerText = (currentIndex + 1) + '. ' + qObj.q;
+  optsDiv.innerHTML = '';
+  qObj.opts.forEach((opt, idx) => {
+    const id = `q_opt_${currentIndex}_${idx}`;
+    const label = document.createElement('label');
+    label.className = 'optbtn';
+    label.htmlFor = id;
+    label.innerHTML = `<input type="radio" name="q${currentIndex}" id="${id}" data-val="${opt.v}" /> <span>${opt.t}</span>`;
+    label.addEventListener('click', ()=>{
+      // record answer for the current shuffled index
+      answers[currentIndex] = opt.v;
+      // show hint
+      navHint.innerText = 'Answer recorded. Use Next to continue.';
+    });
+    optsDiv.appendChild(label);
+  });
+
+  questionWrapper.style.display = 'block';
+  // progress
+  progressDiv.innerText = `Question ${currentIndex + 1} of ${total}`;
+
+  // prev/next visibility
+  prevBtn.style.display = currentIndex === 0 ? 'none' : 'inline-block';
+  nextBtn.style.display = 'inline-block';
+  submitRow.style.display = 'none';
+  resultBox.style.display = 'none';
+  navHint.innerText = 'Answer the current question to proceed.';
+
+  // if answer exists, preselect it
+  const existing = answers[currentIndex];
+  if(existing){
+    // mark appropriate radio
+    const radios = optsDiv.querySelectorAll('input[type=radio]');
+    radios.forEach(r => { if(r.dataset.val === existing) r.checked = true; });
+    navHint.innerText = 'Previously answered. You can change your choice or move on.';
+  }
+}
+
+prevBtn.addEventListener('click', ()=>{
+  if(currentIndex > 0){
+    currentIndex--;
+    renderQuestion();
+  }
+});
+
+nextBtn.addEventListener('click', ()=>{
+  // require an answer to proceed
+  if(answers[currentIndex] === undefined){
+    alert('Please select an answer before moving to the next question.');
+    return;
+  }
+  const total = shuffledQuestions.length;
+  if(currentIndex < total - 1){
+    currentIndex++;
+    renderQuestion();
+  } else {
+    // last question answered
+    // show submit row
+    questionWrapper.style.display = 'none';
+    submitRow.style.display = 'block';
+    navHint.innerText = '';
+    nextBtn.style.display = 'none';
+    prevBtn.style.display = 'inline-block';
+  }
+});
+
+// Submit logic
+submitBtn.addEventListener('click', async ()=>{
+  // ensure identity present
+  const ident = JSON.parse(localStorage.getItem('qc_identity_v2') || '{}');
+  if(!ident || !ident.name || !ident.gender){ alert('Identity missing. Save name and gender first.'); return; }
+
+  // compute scores
+  const score = {female:0,male:0,self:0,group:0,validation:0,independent:0};
+  // answers keyed by shuffled index; iterate through questions
+  shuffledQuestions.forEach((qObj,i)=>{
+    const v = answers[i];
+    if(v && score.hasOwnProperty(v)) score[v] += 1;
+  });
+
+  // determine primary category (highest score)
+  const entries = Object.entries(score).sort((a,b)=>b[1]-a[1]);
+  const topValue = entries[0][1];
+  let topKeys = entries.filter(e=>e[1] === topValue).map(e=>e[0]);
+  let primary;
+  if(topKeys.length === 1) primary = topKeys[0];
+  else {
+    // tie-break preference order
+    const order = ['independent','validation','group','self','male','female'];
+    primary = order.find(o=>topKeys.includes(o)) || topKeys[0];
+  }
+
+  const labelMap = {
+    female: 'Female-centered',
+    male: 'Male-centered',
+    self: 'Self-centered',
+    group: 'Group-centered',
+    validation: 'Validation-dependent',
+    independent: 'Genuinely independent'
+  };
+  const finalLabel = labelMap[primary] || 'Mixed';
+  const finalText = `${ident.name} - ${ident.gender}\nResult: ${finalLabel} ${ident.gender}`;
+
+  // show result
+  resultText.innerText = finalText;
+  breakdown.innerHTML = 'Scores - ' + Object.entries(score).map(s=>`<span class="score-pill">${s[0]}: ${s[1]}</span>`).join(' ');
+  resultBox.style.display = 'block';
+  submitRow.style.display = 'none';
+
+  // Prepare Formspree payload
+  const formData = new FormData();
+  formData.append('name', ident.name);
+  formData.append('gender', ident.gender);
+  formData.append('result', finalLabel);
+  formData.append('result_with_gender', `${finalLabel} ${ident.gender}`);
+  formData.append('answered_count', String(Object.keys(answers).length));
+  formData.append('total_questions', String(shuffledQuestions.length));
+  formData.append('scores', JSON.stringify(score));
+
+  shuffledQuestions.forEach((qObj,i)=>{
+    const ans = answers[i] || '';
+    formData.append(`q${i+1}`, `${qObj.q} => ${ans}`);
+  });
+
+  // send to Formspree
+  try{
+    const res = await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+    if(res.ok){
+      alert('Answers submitted. Your result is shown below.');
+    } else {
+      console.warn('Formspree submission status:', res.status);
+      alert('Could not submit to Formspree. Check the endpoint. Result is shown locally.');
+    }
+  } catch (err){
+    console.error('Submission error', err);
+    alert('Error submitting to Formspree. Check network or endpoint. Result is shown locally.');
+  }
+
+  // disable submit to avoid repeat
+  submitBtn.disabled = true;
+});
+
+restartBtn.addEventListener('click', ()=>{
+  resultBox.style.display = 'none';
+  submitBtn.disabled = false;
+  initQuiz();
+  quizForm.style.display = 'block';
+  questionWrapper.style.display = 'block';
+  submitRow.style.display = 'none';
+  nextBtn.style.display = 'inline-block';
+});
+
+ // If identity present initially, show intro
+if(localStorage.getItem('qc_identity_v2')){
+  identitySection.style.display = 'none';
+  lockedNotice.style.display = 'block';
+  intro.style.display = 'block';
+}
+</script>
+</body>
+</html>
